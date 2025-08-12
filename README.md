@@ -1,2 +1,2 @@
-# GoogleEarthEngine
-Learn Everything about Google Earth Engine (GEE)
+# Google Earth Engine (GEE)
+Learn everything about Google Earth Engine.
