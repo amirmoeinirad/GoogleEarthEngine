@@ -1,0 +1,37 @@
+
+// Loading an image using the image ID (for Landsat)
+// Complete Landsat Image ID in USGS EarthExplorer platform: LC09_L2SP_166034_20250806_20250808_02_T1
+// 'ee.Image()' is a constructor for an image object.
+var Gilan1 = ee.Image("LANDSAT/LC09/C02/T1_L2/LC09_166034_20250806");
+// 'print()' just displays info about a variable in the console window.
+print(Gilan1);
+
+
+// Loading an image using the image ID (for Sentinel 2)
+// Complete Sentinel 2 Image Name in Copernicus Browser: S2A_MSIL2A_20250715T073031_N0511_R049_T39SUB_20250715T104731
+// Complete Sentinel 2 Image Datastrip Id in Copernicus Browser: S2A_OPER_MSI_L2A_DS_2APS_20250715T104731_S20250715T073445_N05.11
+// Copernicus Syntax:
+// First Timestamp: 20250715T073031 -> (image acquisition/sensing start time)
+// Second Timestamp: 20250715T104731 -> (product generation time)
+// GEE Syntax:
+// First Timestamp: 20250715T073031 -> (image acquisition/sensing start time)
+// Second Timestamp: 20250715T073445 -> (image acquisition/sensing stop time.
+// It can be obtained from GEE via a custom script or directly from datastrip id.)
+var Gilan2 = ee.Image("COPERNICUS/S2_SR/20250715T073031_20250715T073445_T39SUB");
+print(Gilan2);
+
+
+// Zoom the map to the image area
+Map.centerObject(Gilan1,10);
+
+
+// Add images to the map view as layers
+// bands: R-G-B
+// Landsat 8 displays topographic features much better than Sentinel 2.
+// Creating a color dictionary.
+var Color = {bands:['SR_B4', 'SR_B5', 'SR_B3'], min:5000, max:25000, gamma:[1,1,1]};
+Map.addLayer(Gilan1, Color, 'Landsat 8');
+var Color = {bands:['B4', 'B8', 'B3'], min:0, max:8000, gamma:[1,1,1]};
+Map.addLayer(Gilan2, Color, 'Sentinel 2');
+
+print('Done.')
