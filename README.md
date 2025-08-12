@@ -1,2 +1,3 @@
 # Google Earth Engine (GEE)
-Learn everything about Google Earth Engine.
+<p>Learn everything about Google Earth Engine.</p>
+<p>Read the comments in the source codes for explanations.</p>
