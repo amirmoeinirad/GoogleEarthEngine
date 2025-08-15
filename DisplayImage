@@ -1,4 +1,8 @@
 
+// Amir Moeini Rad
+// August 10, 2025
+
+
 // Loading an image using the image ID (for Landsat)
 // Complete Landsat Image ID in USGS EarthExplorer platform: LC09_L2SP_166034_20250806_20250808_02_T1
 // 'ee.Image()' is a constructor for an image object.
