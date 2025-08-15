@@ -1,0 +1,40 @@
+
+// Amir Moeini Rad
+// August 15, 2025
+
+// client-side and Server-side calculations in GEE
+
+
+// Client side calculations
+// 'a', 'b' and 'c' are created on the client.
+var a = 2;
+var b = 5;
+var c = a + b;
+print(typeof(a));
+print(c);
+
+
+// Server side calculations
+// 'ee.Number' constructs a new number object on the server
+// 'a' and 'b' are created on the server.
+// The result is stored in a client-side number 'c'.
+var a = ee.Number(2);
+var b = ee.Number(5);
+var c = a.add(b);
+print(typeof(a));
+print(c);
+
+
+// Client side calculations lead to wrong results!
+if (c.eq(4)) {
+  print('c = 4');
+}
+else {
+  print('c != 4');
+}
+
+
+// Server side calculations lead to correct result!
+// This means you must use GEE classes and objects for correct calculations.
+var result = ee.Algorithms.If(ee.Algorithms.IsEqual(c,4), 'c = 4', 'c != 4');
+print(result);
