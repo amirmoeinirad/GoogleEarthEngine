@@ -1,0 +1,143 @@
+var Gilan = ee.FeatureCollection("users/amirmoinirad/Gilan_Province"),
+    Tehran = ee.FeatureCollection("users/amirmoinirad/Tehran_Province"),
+    L8 = ee.ImageCollection("LANDSAT/LC08/C02/T1_TOA"),
+    imageVisParam = {"opacity":1,"bands":["B3","B5","B4"],"min":0.09792478010058403,"max":0.48146889731287956,"gamma":1},
+    Iran = ee.FeatureCollection("users/amirmoinirad/Iran");
+-----------------------------------------------------------------
+Convert the above code for input data.
+You must use your own geometries (polygons) instead of Gilan/Tehran/Iran.
+-----------------------------------------------------------------
+
+
+// Amir Moeini Rad
+// August 17, 2025
+
+
+// Print a message to the Console
+print('Working with Image Collections in GEE.');
+
+
+//////////////////////////////////////////////////////////////////
+
+
+Map.addLayer(Gilan,0,'Gilan Boundary');
+
+
+// Total number of images in Landsat 8 collection
+// 'filterBounds()' filters a collection based on a given geometry.
+// 'size()' returns the number of images in a collection.
+print('Number of images in the entire Landsat 8 collection for Gilan:');
+var Filtered_Region = L8.filterBounds(Gilan);
+print(Filtered_Region.size());
+
+
+// Filtering the collection based on the cloud coverage (in percent)
+var Filtered_Region_Cloud = Filtered_Region.filterMetadata('CLOUD_COVER','less_than',40);
+print(Filtered_Region_Cloud.size());
+
+
+// Filtering the collection based on a time range
+var Filtered_Region_Cloud_Date = Filtered_Region_Cloud.filterDate('2024-01-01','2024-12-30');
+print(Filtered_Region_Cloud_Date.size());
+
+
+// Another style of coding
+// var L8_Collection = L8.filterBounds(Gilan)
+//                       .filterMetadata('CLOUD_COVER','less_than',40)
+//                       .filterDate('2024-01-01','2024-12-30');
+// print(L8_Collection.size());
+
+
+// The final median image
+// 'median()' computes the median of all pixel vectors across a collection
+// 'clip()' clips an image using a geometry (polygon).
+var L8_Collection_Median = Filtered_Region_Cloud_Date.median().clip(Gilan);
+Map.addLayer(L8_Collection_Median,imageVisParam,'Median Images');
+Map.centerObject(Gilan);
+
+
+print('Number of bands in each Landsat 8 image:');
+print(L8.count());
+
+
+// Print all information (bands + properties/metadata) on a Landsat image to the Console
+// Landsat Collection 2 Level 1 (T1) Scene
+// Landsat Product Identifier: LC08_L1TP_166034_20210718_20210729_01_T1
+// Landsat Scene Identifier: LC81660342021199LGN00
+print(ee.Image('LANDSAT/LC08/C02/T1/LC08_166034_20210718'));
+
+
+// Get Image Properties
+// (1) Cloud Cover
+var image = ee.Image('LANDSAT/LC08/C02/T1/LC08_166034_20210718');
+var cloud_percent = image.get('CLOUD_COVER');
+print('Cloud Percent: ', cloud_percent);
+
+
+// (2) Band Names
+var band_names = image.bandNames();
+print('Band Names:', band_names);
+
+
+// //////////////////////////////////////////////////////////////////
+
+
+// Store the coordinates of a point in a variable
+var city = ee.Geometry.Point(49.5039, 37.4304);
+
+
+// Add the point variable to the map
+Map.addLayer(city,0,'Point');
+print('Point: ', city);
+
+
+// Dates of interest
+var start = ee.Date('2022-05-01');
+var finish = ee.Date('2023-05-01');
+
+
+// Create image collections
+// Landsat 8 Collection 2 Level 1 (Tier 1)
+var Anzali = ee.ImageCollection("LANDSAT/LC08/C02/T1_TOA")
+.filterBounds(city)
+.filterDate(start,finish);
+
+
+// Get the number of imgages in the collection above
+var count = Anzali.size();
+print('Size of collection for Anzali:', count);
+
+
+// Sort the collection by cloud cover
+var least_cloudy = ee.Image(Anzali.sort('CLOUD_COVER').first());
+var most_cloudy = ee.Image(Anzali.sort('CLOUD_COVER',false).first());
+
+
+var least_cloudy_percent = least_cloudy.get('CLOUD_COVER');
+print('The least cloudy image for Anzali: ', least_cloudy);
+print('Cloud Percent: ', least_cloudy_percent);
+
+
+var most_cloudy_percent = most_cloudy.get('CLOUD_COVER');
+print('The most cloudy image for Anzali: ', most_cloudy);
+print('Cloud Percent: ', most_cloudy_percent);
+
+
+// Filter the collection based on cloud cover
+var filtered = Anzali.filter(ee.Filter.eq('CLOUD_COVER', 0));
+var count = filtered.size();
+print('Number of cloud-free images in the collection for Anzali:', count);
+
+
+var filtered = Anzali.filter(ee.Filter.lte('CLOUD_COVER', 40));
+var count = filtered.size();
+print('Number of images with cloud cover less than 40% in the collection for Anzali:', count);
+
+
+// Get some metadata
+var date = least_cloudy.get('DATE_ACQUIRED');
+print('The date the least cloudy image was acquired: ',date);
+
+
+var zone = least_cloudy.get('UTM_ZONE');
+print('The zone number of the least cloudy image for Anzali: ',zone);
