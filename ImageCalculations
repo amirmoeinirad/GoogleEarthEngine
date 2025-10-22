@@ -1,0 +1,83 @@
+
+// Amir Moeini Rad
+// October 2025
+
+
+// Main Concept: Different ways of defining an expression or formula in GEE.
+
+
+// 'ee.Geometry.Point()' returns a point object.
+// 'filterBounds()' selects images overlapping with the input point in the collection.
+// 'filterMetadata()'selects images in the collection based on the given metadata and condition.
+// For instance, here, images having cloud coverage less than 1% are selected.
+// 'first()' selects the first image in the filtered collection.
+var image = imageCollection.filterBounds(ee.Geometry.Point(49.4237,37.4447))
+.filterDate('2024-01-01','2024-12-30')
+.filterMetadata('CLOUD_COVER','less_than',10)
+.first();
+
+
+// Print the selected image information in the console.
+print(image);
+print('Date of image acquisition:',image.get('DATE_ACQUIRED'));
+
+
+// Selecting bands 4 and 5.
+var Red_Band = image.select('B4');
+var NIR_Band = image.select('B5');
+
+
+// -------- //
+// METHOD 1 //
+// -------- //
+
+
+// Defining the NDVI formula: (NIR-R)/(NIR+R)
+// var NDVI = NIR_Band.subtract(Red_Band).divide(NIR_Band.add(Red_Band));
+
+
+// -------- //
+// METHOD 2 //
+// -------- //
+
+
+// Another way to define the NDVI formula.
+// var NDVI = image.expression('(NIR-Red)/(NIR+Red)',
+//   {
+//       'NIR': NIR_Band,
+//       'Red': Red_Band
+//   });
+
+
+// Print band names in the console window
+print(image.bandNames());
+
+
+// -------- //
+// METHOD 3 //
+// -------- //
+
+
+// Another way to define the NDVI formula.
+// number of the band: n(4)
+// var NDVI = image.expression('(b(4)-b(3))/(b(4)+b(3))');
+
+
+// -------- //
+// METHOD 4 //
+// -------- //
+
+
+// name of the band: n(4)
+var NDVI = image.expression('(b(\'B5\')-b(\'B4\'))/(b(\'B5\')+b(\'B4\'))');
+
+
+// -------------------------------
+
+
+// Adding the NDVI layer to the map.
+Map.addLayer(NDVI,imageVisParam,'NDVI');
+
+
+// Centering the map on the NDVI location.
+Map.centerObject(NDVI,10);
